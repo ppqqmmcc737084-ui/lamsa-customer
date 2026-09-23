@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+defaults:
+  run:
+    working-directory: lamsa_customer
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,4 +27,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: lamsa-customer-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: lamsa_customer/build/app/outputs/flutter-apk/app-release.apk
