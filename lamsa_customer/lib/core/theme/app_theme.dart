@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   static const primary = Color(0xFFE63946);
@@ -13,33 +12,39 @@ class AppColors {
 }
 
 class AppTheme {
+  static const String fontFamily = 'IBMPlexSansArabic';
+
   static ThemeData get lightTheme {
-    final baseTextTheme = GoogleFonts.almaraiTextTheme();
+    final baseTextTheme = ThemeData.light().textTheme.apply(
+      fontFamily: fontFamily,
+      bodyColor: AppColors.dark,
+      displayColor: AppColors.dark,
+    );
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: fontFamily,
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.primary,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        background: AppColors.background,
+        surface: AppColors.background,
       ),
-      textTheme: baseTextTheme.apply(
-        bodyColor: AppColors.dark,
-        displayColor: AppColors.dark,
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: AppColors.dark),
-        titleTextStyle: GoogleFonts.almarai(
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          color: AppColors.dark,
-        ),
-      ),
+      textTheme: baseTextTheme,
+      appBarTheme:
+          const AppBarTheme(
+            backgroundColor: AppColors.background,
+            elevation: 0,
+            centerTitle: true,
+            iconTheme: IconThemeData(color: AppColors.dark),
+          ).copyWith(
+            titleTextStyle: baseTextTheme.titleLarge?.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.dark,
+            ),
+          ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -48,7 +53,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: GoogleFonts.almarai(
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -59,20 +65,23 @@ class AppTheme {
         color: AppColors.white,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.06),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.lightGrey,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
-        hintStyle: GoogleFonts.almarai(color: AppColors.grey),
+        hintStyle: const TextStyle(
+          fontFamily: fontFamily,
+          color: AppColors.grey,
+        ),
       ),
     );
   }

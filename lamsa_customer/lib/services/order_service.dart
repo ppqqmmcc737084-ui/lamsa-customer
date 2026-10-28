@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/order.dart';
-import '../models/payment_type.dart';
 import 'auth_service.dart';
 
 class OrderService {
