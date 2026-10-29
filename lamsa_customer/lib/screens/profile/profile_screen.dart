@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../orders/my_orders_screen.dart';
 import '../notifications/notifications_screen.dart';
+import 'settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -26,7 +27,15 @@ class ProfileScreen extends StatelessWidget {
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
             child: _menuItem(Icons.notifications_outlined, 'الإشعارات'),
           ),
-          _menuItem(Icons.settings_outlined, 'الإعدادات'),
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SettingsScreen(),
+              ),
+            ),
+            child: _menuItem(Icons.settings_outlined, 'الإعدادات'),
+          ),
           _menuItem(Icons.help_outline_rounded, 'المساعدة والدعم'),
         ],
       ),
