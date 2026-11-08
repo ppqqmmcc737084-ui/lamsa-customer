@@ -34,7 +34,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        background: AppColors.background,
+        surface: AppColors.background,
       ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(fontFamily: 'IBMPlexSansArabic'),
