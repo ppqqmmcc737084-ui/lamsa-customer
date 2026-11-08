@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_colors.dart';
 import '../../models/product.dart';
 import '../common/favorite_button.dart';
 
@@ -15,12 +15,13 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasRating = product.reviewsCount > 0;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(AppRadius.medium),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: context.softShadow, blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -32,20 +33,17 @@ class ProductCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.medium)),
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: Hero(
-                    tag: 'product_${product.id}',
-                    child: CachedNetworkImage(
-                      imageUrl: product.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: AppColors.lightGrey,
-                        highlightColor: Colors.white,
-                        child: Container(color: AppColors.lightGrey),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColors.lightGrey,
-                        child: const Icon(Icons.image_not_supported_outlined, color: AppColors.grey),
-                      ),
+                  child: CachedNetworkImage(
+                    imageUrl: product.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (_, _) => Shimmer.fromColors(
+                      baseColor: context.fieldBg,
+                      highlightColor: context.cardBg,
+                      child: Container(color: context.fieldBg),
+                    ),
+                    errorWidget: (_, _, _) => Container(
+                      color: context.fieldBg,
+                      child: Icon(Icons.image_not_supported_outlined, color: context.textMuted),
                     ),
                   ),
                 ),
@@ -76,29 +74,34 @@ class ProductCard extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(product.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.dark)),
-                const SizedBox(height: 4),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMain)),
+                const SizedBox(height: 3),
                 Row(
                   children: [
-                    RatingBarIndicator(
-                      rating: product.rating,
-                      itemCount: 5,
-                      itemSize: 12,
-                      unratedColor: AppColors.lightGrey,
-                      itemBuilder: (context, _) => const Icon(Icons.star_rounded, color: AppColors.accent),
+                    const Icon(Icons.star_rounded, size: 14, color: AppColors.accent),
+                    const SizedBox(width: 2),
+                    Text(
+                      hasRating ? product.rating.toStringAsFixed(1) : 'بدون تقييم',
+                      style: TextStyle(
+                        fontSize: hasRating ? 11 : 10,
+                        fontWeight: hasRating ? FontWeight.w700 : FontWeight.w400,
+                        color: hasRating ? context.textMain : context.textMuted,
+                      ),
                     ),
-                    const SizedBox(width: 4),
-                    Text('(${product.reviewsCount})', style: const TextStyle(fontSize: 10, color: AppColors.grey)),
+                    if (hasRating) ...[
+                      const SizedBox(width: 3),
+                      Text('(${product.reviewsCount})', style: TextStyle(fontSize: 10, color: context.textMuted)),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     Text('${product.finalPrice.toStringAsFixed(0)} ر.س',
@@ -106,7 +109,7 @@ class ProductCard extends StatelessWidget {
                     if (product.hasDiscount) ...[
                       const SizedBox(width: 6),
                       Text('${product.price.toStringAsFixed(0)} ر.س',
-                          style: const TextStyle(fontSize: 11, color: AppColors.grey, decoration: TextDecoration.lineThrough)),
+                          style: TextStyle(fontSize: 11, color: context.textMuted, decoration: TextDecoration.lineThrough)),
                     ],
                   ],
                 ),

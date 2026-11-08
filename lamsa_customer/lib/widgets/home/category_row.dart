@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_colors.dart';
 import '../../models/store_category.dart';
 
 class CategoryRow extends StatelessWidget {
@@ -16,17 +17,19 @@ class CategoryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final idleFill = AppColors.primary.withValues(alpha: context.isDarkMode ? 0.18 : 0.08);
     return SizedBox(
       height: 92,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (context, index) {
           final cat = categories[index];
           final isSelected = selectedName == cat.name;
           return GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () => onSelect(cat.name),
             child: Column(
               children: [
@@ -35,10 +38,10 @@ class CategoryRow extends StatelessWidget {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.08),
+                    color: isSelected ? AppColors.primary : idleFill,
                     shape: BoxShape.circle,
                     boxShadow: isSelected
-                        ? [BoxShadow(color: AppColors.primary.withOpacity(0.35), blurRadius: 10, offset: const Offset(0, 4))]
+                        ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.35), blurRadius: 10, offset: const Offset(0, 4))]
                         : [],
                   ),
                   child: Icon(cat.icon, color: isSelected ? Colors.white : AppColors.primary, size: 28),
@@ -47,8 +50,9 @@ class CategoryRow extends StatelessWidget {
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   style: TextStyle(
+                    fontFamily: 'IBMPlexSansArabic',
                     fontSize: 12,
-                    color: isSelected ? AppColors.primary : AppColors.dark,
+                    color: isSelected ? AppColors.primary : context.textMain,
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w400,
                   ),
                   child: Text(cat.name),

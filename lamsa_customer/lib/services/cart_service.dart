@@ -12,9 +12,9 @@ class CartService {
     final list = List<CartItem>.from(items.value);
     final index = list.indexWhere((item) => item.product.id == product.id);
     if (index >= 0) {
-      list[index].quantity += quantity;
+      list[index].quantity = (list[index].quantity + quantity).clamp(1, 99).toInt();
     } else {
-      list.add(CartItem(product: product, quantity: quantity));
+      list.add(CartItem(product: product, quantity: quantity.clamp(1, 99).toInt()));
     }
     items.value = list;
   }
@@ -26,7 +26,7 @@ class CartService {
       if (quantity <= 0) {
         list.removeAt(index);
       } else {
-        list[index].quantity = quantity;
+        list[index].quantity = quantity > 99 ? 99 : quantity;
       }
     }
     items.value = list;

@@ -27,7 +27,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
 
   List<PaymentType> get _commonPayments {
     final sets = widget.items.map((i) => i.product.allowedPayments.toSet()).toList();
-    return sets.reduce((a, b) => a.intersection(b)).toList();
+    return sets.reduce((a, b) => a.intersection(b)).where((t) => t == PaymentType.cashOnDelivery).toList();
   }
 
   double _itemSubtotal(CartItem item) => item.product.finalPrice * item.quantity;
@@ -148,7 +148,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
             const Text('اختر طريقة الدفع', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
             const SizedBox(height: 10),
             if (_commonPayments.isEmpty)
-              const Text('منتجات السلة ما فيها طريقة دفع مشتركة، احذف منتج وجرب مرة ثانية',
+              const Text('الدفع من السلة عند الاستلام فقط حالياً، ومنتج في سلتك ما يدعمه. اطلبه مباشرة من صفحته أو احذفه من السلة',
                   style: TextStyle(color: AppColors.primary, fontSize: 12))
             else
               ..._commonPayments.map((type) {
