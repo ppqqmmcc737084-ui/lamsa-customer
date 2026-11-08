@@ -11,6 +11,7 @@ import '../../widgets/home/section_header.dart';
 import '../checkout/checkout_screen.dart';
 import '../../services/cart_service.dart';
 import '../../services/review_service.dart';
+import '../store/store_page_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -103,6 +104,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(product.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.dark)),
+                      const SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => StorePageScreen(sellerId: product.sellerId, storeName: product.storeName),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.storefront_outlined, size: 14, color: AppColors.primary),
+                            const SizedBox(width: 4),
+                            Text(product.storeName,
+                                style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
+                            const SizedBox(width: 2),
+                            const Icon(Icons.arrow_forward_ios_rounded, size: 10, color: AppColors.primary),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [

@@ -57,7 +57,9 @@ final mockProducts = List.generate(8, (i) {
     'كاميرا فورية تطبع صورك مباشرة، مثالية للحفلات والذكريات.',
     'محفظة جلدية أنيقة بجيوب متعددة للبطاقات والنقود.',
   ];
-  final paymentsList = [
+  
+  // ✅ التصحيح: تحديد النوع صراحة لتجنب خطأ List<dynamic>
+  final List<List<PaymentType>> paymentsList = [
     [PaymentType.cashOnDelivery, PaymentType.fullOnline],
     [PaymentType.cashOnDelivery],
     [PaymentType.cashOnDelivery, PaymentType.deposit, PaymentType.fullOnline],
@@ -67,9 +69,12 @@ final mockProducts = List.generate(8, (i) {
     [PaymentType.deposit, PaymentType.fullOnline],
     [PaymentType.cashOnDelivery],
   ];
+
   return Product(
     id: 'p$i',
+    sellerId: 'mock_seller_1', // ✅ تمت الإضافة للتكامل
     name: names[i],
+    storeName: 'متجر لمسة', // ✅ تمت الإضافة للتكامل مع واجهة المستخدم
     imageUrl: 'https://picsum.photos/seed/lamsa$i/400/400',
     images: [
       'https://picsum.photos/seed/lamsa$i/600/600',
@@ -83,7 +88,7 @@ final mockProducts = List.generate(8, (i) {
     reviewsCount: 20 + i * 7,
     soldCount: 50 + i * 23,
     isBestSeller: i % 3 == 0,
-    allowedPayments: paymentsList[i],
+    allowedPayments: paymentsList[i], // ✅ الآن تتطابق الأنواع تماماً
     depositPercent: 0.25,
   );
 });

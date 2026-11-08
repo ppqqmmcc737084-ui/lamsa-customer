@@ -25,7 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
           autofocus: true,
           textDirection: TextDirection.rtl,
           decoration: const InputDecoration(
-            hintText: 'دور على منتج...',
+            hintText: 'دور على منتج أو متجر...',
             border: InputBorder.none,
           ),
           onChanged: (value) => setState(() => _query = value.trim()),
@@ -46,14 +46,21 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   Icon(Icons.search_rounded, size: 56, color: AppColors.grey),
                   SizedBox(height: 12),
-                  Text('اكتب اسم المنتج اللي تدور عليه', style: TextStyle(color: AppColors.grey)),
+                  Text('دور باسم المنتج أو اسم المتجر', style: TextStyle(color: AppColors.grey)),
                 ],
               ),
             );
           }
 
-          final results = allProducts
-              .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
+          final q = _query.toLowerCase();
+          final byName = allProducts.where((p) => p.name.toLowerCase().contains(q));
+          final byStore = allProducts.where((p) => p.storeName.toLowerCase().contains(q));
+          final results = {...byName, ...byStore}.toList();
+
+          final matchingStoreNames = allProducts
+              .map((p) => p.storeName)
+              .toSet()
+              .where((name) => name.toLowerCase().contains(q))
               .toList();
 
           if (results.isEmpty) {
@@ -69,16 +76,53 @@ class _SearchScreenState extends State<SearchScreen> {
             );
           }
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, mainAxisSpacing: 14, crossAxisSpacing: 14, childAspectRatio: 0.62),
-            itemCount: results.length,
-            itemBuilder: (context, index) => GestureDetector(
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: results[index]))),
-              child: ProductCard(product: results[index]),
-            ),
+          return CustomScrollView(
+            slivers: [
+              if (matchingStoreNames.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.md, 12, AppSpacing.md, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('متاجر', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.grey)),
+                        const SizedBox(height: 8),
+                        ...matchingStoreNames.map((storeName) => Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(AppRadius.medium)),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.storefront_rounded, color: AppColors.primary),
+                                  const SizedBox(width: 10),
+                                  Text(storeName, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                ],
+                              ),
+                            )),
+                        const SizedBox(height: 8),
+                        const Text('منتجات', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.grey)),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, mainAxisSpacing: 14, crossAxisSpacing: 14, childAspectRatio: 0.62),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => GestureDetector(
+                      onTap: () => Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: results[index]))),
+                      child: ProductCard(product: results[index]),
+                    ),
+                    childCount: results.length,
+                  ),
+                ),
+              ),
+              const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
+            ],
           );
         },
       ),

@@ -8,7 +8,10 @@ import '../common/favorite_button.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key, required this.product});
+  final bool? forceBestSeller;
+  const ProductCard({super.key, required this.product, this.forceBestSeller});
+
+  bool get _isBestSeller => forceBestSeller ?? product.isBestSeller;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +50,7 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (product.isBestSeller)
+              if (_isBestSeller)
                 Positioned(
                   top: 8,
                   right: 8,
@@ -69,7 +72,7 @@ class ProductCard extends StatelessWidget {
                         style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
                   ),
                 ),
-               Positioned(bottom: 8, left: 8, child: FavoriteButton(productId: product.id)),
+              Positioned(bottom: 8, left: 8, child: FavoriteButton(productId: product.id)),
             ],
           ),
           Padding(

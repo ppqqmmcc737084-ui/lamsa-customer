@@ -1,0 +1,14 @@
+{
+  "@@locale": "en",
+  "appName": "Lamsa",
+  "navHome": "Home",
+  "navFavorites": "Favorites",
+  "navCart": "Cart",
+  "navProfile": "Account",
+  "settingsTitle": "Settings",
+  "settingsDarkMode": "Dark mode",
+  "settingsLanguage": "Language",
+  "settingsVersion": "App version: {version}",
+  "languageSystem": "Device language",
+  "currencySymbol": "YER"
+}

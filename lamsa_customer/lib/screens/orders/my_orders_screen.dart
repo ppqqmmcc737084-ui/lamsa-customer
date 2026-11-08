@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/orders/order_timeline.dart';
+import '../../services/order_service.dart'; // ✅ تأكد من وجود هذا الاستيراد
 
 class MyOrdersScreen extends StatelessWidget {
   const MyOrdersScreen({super.key});
@@ -44,7 +46,8 @@ class MyOrdersScreen extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
-              return _orderCard(data);
+              final orderId = docs[index].id; // ✅ جلب الـ ID هنا بشكل نظيف
+              return _orderCard(context, orderId, data);
             },
           );
         },
@@ -52,21 +55,27 @@ class MyOrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget _orderCard(Map<String, dynamic> data) {
+  Widget _orderCard(BuildContext context, String orderId, Map<String, dynamic> data) {
     final status = data['status'] ?? 'pendingApproval';
-    final isRejected = status == 'rejected';
-
+    
     Color statusColor = AppColors.accent;
     String statusText = 'بانتظار الموافقة';
+    
     if (status == 'confirmed') {
       statusColor = AppColors.success;
       statusText = 'مؤكد';
-    } else if (isRejected) {
+    } else if (status == 'preparing') {
+      statusColor = AppColors.primary;
+      statusText = 'قيد التجهيز';
+    } else if (status == 'shipped') {
+      statusColor = AppColors.accent;
+      statusText = 'تم الشحن';
+    } else if (status == 'delivered' || status == 'completed') {
+      statusColor = AppColors.success;
+      statusText = 'تم التسليم';
+    } else if (status == 'rejected') {
       statusColor = AppColors.primary;
       statusText = 'مرفوض';
-    } else if (status == 'completed') {
-      statusColor = AppColors.success;
-      statusText = 'مكتمل';
     }
 
     return Container(
@@ -83,7 +92,13 @@ class MyOrdersScreen extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.network(data['productImage'] ?? '', width: 56, height: 56, fit: BoxFit.cover),
+                child: Image.network(
+                  data['productImage'] ?? '', 
+                  width: 56, 
+                  height: 56, 
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(width: 56, height: 56, color: AppColors.lightGrey),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -110,6 +125,52 @@ class MyOrdersScreen extends StatelessWidget {
               const Text('الإجمالي', style: TextStyle(fontSize: 12, color: AppColors.grey)),
               Text('${data['totalAmount'] ?? 0} ر.س', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.primary)),
             ],
+          ),
+          
+          const SizedBox(height: 14),
+          OrderTimeline(status: status),
+          
+          // ✅ زر إلغاء الطلب يظهر فقط إذا كانت الحالة "بانتظار الموافقة"
+          if (status == 'pendingApproval') ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _confirmCancel(context, orderId), // ✅ تمرير الـ orderId مباشرة وبشكل نظيف
+                icon: const Icon(Icons.close_rounded, size: 16),
+                label: const Text('إلغاء الطلب'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary, 
+                  side: const BorderSide(color: AppColors.primary),
+                  minimumSize: const Size.fromHeight(44),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ✅ دالة تأكيد الإلغاء
+  void _confirmCancel(BuildContext context, String orderId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تأكيد الإلغاء'),
+        content: const Text('هل أنت متأكد إنك تبي تلغي هذا الطلب؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('تراجع'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await OrderService().cancelOrder(orderId);
+              if (context.mounted) Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: const Text('نعم، ألغِ الطلب', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/order.dart';
-import '../models/payment_type.dart';
 import 'auth_service.dart';
 
 class OrderService {
-  final _collection = FirebaseFirestore.instance.collection('orders');
+  final CollectionReference _collection = FirebaseFirestore.instance.collection('orders');
 
   Future<String> submitOrder(
     OrderModel order, {
     required String customerName,
     required String customerPhone,
     required String customerAddress,
+    String? transferReference,
   }) async {
     final customerId = AuthService.instance.currentUserId ?? '';
+    
     final doc = await _collection.add({
       'customerId': customerId,
       'sellerId': order.product.sellerId,
@@ -28,8 +29,15 @@ class OrderService {
       'customerName': customerName,
       'customerPhone': customerPhone,
       'customerAddress': customerAddress,
+      'transferReference': transferReference,
       'createdAt': FieldValue.serverTimestamp(),
+      'deliveryFee': order.deliveryFee,
     });
+    
     return doc.id;
+  }
+
+  Future<void> cancelOrder(String orderId) {
+    return _collection.doc(orderId).update({'status': 'cancelledByCustomer'});
   }
 }

@@ -24,6 +24,7 @@ class ProductService {
       sellerId: data['sellerId'] ?? '',
       category: data['category'] ?? '',
       name: data['name'] ?? '',
+      storeName: data['storeName'] ?? '', // ✅ مطلوب من الـ Model
       imageUrl: data['imageUrl'] ?? '',
       images: (data['images'] as List?)?.cast<String>() ?? const [],
       description: data['description'] ?? '',
@@ -35,8 +36,12 @@ class ProductService {
       reviewsCount: data['reviewsCount'] ?? 0,
       soldCount: data['soldCount'] ?? 0,
       isBestSeller: data['isBestSeller'] ?? false,
+      isFeatured: data['isFeatured'] ?? false,
       allowedPayments: _parsePayments(data['allowedPayments']),
       depositPercent: (data['depositPercent'] ?? 0.2).toDouble(),
+      walletName: data['walletName'], // ✅ مطلوب من الـ Model
+      walletNumber: data['walletNumber'], // ✅ تمت الإضافة
+      deliveryFee: (data['deliveryFee'] ?? 0).toDouble(), // ✅ تمت الإضافة
     );
   }
 

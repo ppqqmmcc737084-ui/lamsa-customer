@@ -1,0 +1,21 @@
+{
+  "@@locale": "ar",
+  "appName": "لمسة",
+  "navHome": "الرئيسية",
+  "navFavorites": "المفضلة",
+  "navCart": "السلة",
+  "navProfile": "حسابي",
+  "settingsTitle": "الإعدادات",
+  "settingsDarkMode": "الوضع الليلي",
+  "settingsLanguage": "اللغة",
+  "settingsVersion": "إصدار التطبيق: {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "languageSystem": "لغة الجهاز",
+  "currencySymbol": "ر.ي"
+}

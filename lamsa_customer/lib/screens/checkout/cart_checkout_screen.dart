@@ -8,6 +8,7 @@ import '../../services/order_service.dart';
 import '../../services/cart_service.dart';
 import 'order_confirmation_screen.dart';
 
+
 class CartCheckoutScreen extends StatefulWidget {
   final List<CartItem> items;
   const CartCheckoutScreen({super.key, required this.items});
@@ -64,6 +65,9 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
           case PaymentType.fullOnline:
             paid = itemTotal;
             break;
+          case PaymentType.walletTransfer: // ✅ تمت إضافة الحالة الناقصة
+            paid = itemTotal; // تحويل كامل عبر المحفظة
+            break;
         }
         final order = OrderModel(
           id: '',
@@ -73,7 +77,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
           totalAmount: itemTotal,
           paidAmount: paid,
           remainingAmount: itemTotal - paid,
-          status: _selected == PaymentType.fullOnline ? OrderStatus.confirmed : OrderStatus.pendingApproval,
+          status: OrderStatus.pendingApproval,
           createdAt: DateTime.now(),
         );
         await OrderService().submitOrder(
@@ -97,9 +101,9 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
               quantity: widget.items.fold(0, (s, i) => s + i.quantity),
               paymentType: _selected,
               totalAmount: total,
-              paidAmount: _selected == PaymentType.fullOnline ? total : 0,
-              remainingAmount: _selected == PaymentType.fullOnline ? 0 : total,
-              status: _selected == PaymentType.fullOnline ? OrderStatus.confirmed : OrderStatus.pendingApproval,
+              paidAmount: _selected == PaymentType.fullOnline || _selected == PaymentType.walletTransfer ? total : 0,
+              remainingAmount: _selected == PaymentType.fullOnline || _selected == PaymentType.walletTransfer ? 0 : total,
+              status: _selected == PaymentType.fullOnline || _selected == PaymentType.walletTransfer ? OrderStatus.confirmed : OrderStatus.pendingApproval,
               createdAt: DateTime.now(),
             ),
           ),
