@@ -103,7 +103,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
               totalAmount: total,
               paidAmount: _selected == PaymentType.fullOnline || _selected == PaymentType.walletTransfer ? total : 0,
               remainingAmount: _selected == PaymentType.fullOnline || _selected == PaymentType.walletTransfer ? 0 : total,
-              status: _selected == PaymentType.fullOnline || _selected == PaymentType.walletTransfer ? OrderStatus.confirmed : OrderStatus.pendingApproval,
+              status: OrderStatus.pendingApproval,
               createdAt: DateTime.now(),
             ),
           ),
