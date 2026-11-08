@@ -30,6 +30,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int _couponDiscount = 0;
   String? _couponError;
   bool _checkingCoupon = false;
+  String? _couponId;
 
   // ✅ 2. حسابات الأسعار الجديدة (الخصم على المنتج فقط، وليس على التوصيل)
   double get subtotal => widget.product.finalPrice * widget.quantity;
@@ -124,8 +125,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       if (result == null) {
                         _couponDiscount = 0;
                         _couponError = 'الكود غير صالح أو منتهي الصلاحية';
+                        _couponId = null;
                       } else {
                         _couponDiscount = result.discountPercent;
+                        _couponId = result.couponId;
                       }
                     });
                   },
@@ -354,6 +357,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       totalAmount: discountedTotal, // ✅ الإجمالي النهائي يشمل الخصم على المنتج + التوصيل
       paidAmount: paid,
       remainingAmount: discountedTotal - paid,
+      deliveryFee: widget.product.deliveryFee,
       status: OrderStatus.pendingApproval,
       createdAt: DateTime.now(),
     );
@@ -370,6 +374,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         customerName: _nameController.text.trim(),
         customerPhone: _phoneController.text.trim(),
         customerAddress: _addressController.text.trim(),
+        couponId: _couponId,
         transferReference: _needsReference ? _refController.text.trim() : null,
       );
       if (!mounted) return;

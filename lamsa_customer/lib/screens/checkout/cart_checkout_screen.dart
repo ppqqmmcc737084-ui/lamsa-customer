@@ -30,7 +30,9 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
     return sets.reduce((a, b) => a.intersection(b)).toList();
   }
 
-  double get total => widget.items.fold(0, (sum, item) => sum + item.totalPrice);
+  double _itemSubtotal(CartItem item) => item.product.finalPrice * item.quantity;
+  double get deliveryTotal => widget.items.fold(0.0, (sum, item) => sum + item.product.deliveryFee);
+  double get total => widget.items.fold(0.0, (sum, item) => sum + _itemSubtotal(item) + item.product.deliveryFee);
 
   @override
   void initState() {
@@ -53,14 +55,16 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
 
     try {
       for (final item in widget.items) {
-        final itemTotal = item.totalPrice;
+        final itemSubtotal = _itemSubtotal(item);
+        final fee = item.product.deliveryFee;
+        final itemTotal = itemSubtotal + fee;
         double paid;
         switch (_selected) {
           case PaymentType.cashOnDelivery:
             paid = 0;
             break;
           case PaymentType.deposit:
-            paid = itemTotal * item.product.depositPercent;
+            paid = itemSubtotal * item.product.depositPercent;
             break;
           case PaymentType.fullOnline:
             paid = itemTotal;
@@ -77,6 +81,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
           totalAmount: itemTotal,
           paidAmount: paid,
           remainingAmount: itemTotal - paid,
+          deliveryFee: fee,
           status: OrderStatus.pendingApproval,
           createdAt: DateTime.now(),
         );
@@ -188,7 +193,12 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('الإجمالي الكلي', style: TextStyle(fontWeight: FontWeight.w700)),
+                  Flexible(
+                    child: Text(
+                      deliveryTotal > 0 ? 'الإجمالي (شامل التوصيل ${deliveryTotal.toStringAsFixed(0)} ر.س)' : 'الإجمالي الكلي',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
                   Text('${total.toStringAsFixed(0)} ر.س', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.primary, fontSize: 16)),
                 ],
               ),

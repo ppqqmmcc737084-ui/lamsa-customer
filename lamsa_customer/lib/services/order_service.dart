@@ -11,9 +11,10 @@ class OrderService {
     required String customerPhone,
     required String customerAddress,
     String? transferReference,
+    String? couponId,
   }) async {
     final customerId = AuthService.instance.currentUserId ?? '';
-    
+
     final doc = await _collection.add({
       'customerId': customerId,
       'sellerId': order.product.sellerId,
@@ -32,8 +33,9 @@ class OrderService {
       'transferReference': transferReference,
       'createdAt': FieldValue.serverTimestamp(),
       'deliveryFee': order.deliveryFee,
+      'couponId': couponId,
     });
-    
+
     return doc.id;
   }
 

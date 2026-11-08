@@ -359,8 +359,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
             ElevatedButton(
               onPressed: () async {
-                await ReviewService().addReview(productId, rating: rating, comment: commentController.text.trim());
+                final messenger = ScaffoldMessenger.of(context);
+                String message;
+                try {
+                  final added = await ReviewService().addReview(productId, rating: rating, comment: commentController.text.trim());
+                  message = added ? 'شكراً لتقييمك' : 'سبق لك تقييم هذا المنتج';
+                } catch (_) {
+                  message = 'تعذّر إرسال التقييم، حاول مرة ثانية';
+                }
                 if (context.mounted) Navigator.pop(context);
+                messenger.showSnackBar(SnackBar(content: Text(message)));
               },
               child: const Text('إرسال'),
             ),
